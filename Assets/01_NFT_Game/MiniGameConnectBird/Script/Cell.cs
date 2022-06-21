@@ -311,7 +311,7 @@ public class Cell : MonoBehaviour
         }
         GameObject catPrefab = null;
         
-        catPrefab = GameAssets.Instance.catPrefabs[cellCatType - 1];
+        catPrefab = GamePlayController.Instance.gameAssets.catPrefabs[cellCatType - 1];
         var catGo = Instantiate(catPrefab, this.transform);
         catGo.name = "Cat";
 

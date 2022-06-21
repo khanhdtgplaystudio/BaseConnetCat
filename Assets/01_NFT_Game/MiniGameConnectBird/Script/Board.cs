@@ -48,10 +48,20 @@ public class Board : MonoBehaviour
     public bool isCatMove = false;
     public Vector3[] keyPositions = new Vector3[5];
 
+    public List<GameObject> lsPrefapt;
     public void Initialize()
     {
         this.RegisterListener(EventID.MOVE_COMPLETED, (param) => OnMoveCompleted());
+        if (lsPrefapt.Count > 0)
+        {
+            foreach (GameObject item in lsPrefapt)
+            {
+                SimplePool.Despawn(item);
+            }
+        }
+        lsPrefapt.Clear();
         SetupBoard(UseProfile.CurrentLevel);
+    
     }
 
     //MAIN FUNCTION TO CREATE BOOARD
@@ -80,7 +90,7 @@ public class Board : MonoBehaviour
             CreateBoardOnScreen(boardData);
             CreateBoardBackground();
             InsertItemsToCells();
-
+            GamePlayController.Instance.gameAssets.textLevel.text = boardData.levelName;
         //    GameplayController.Instance.gameplayUIController.SetUpLevelText(UserProfile.CurrentLevel.ToString());
         }
         else
@@ -109,55 +119,55 @@ public class Board : MonoBehaviour
 
     public void SetupInitialItemPopup()
     {
-        if(CheckBoardHasThisItem(CELL_ITEM_TYPE.Bomb) || CheckBoardHasThisItem(CELL_ITEM_TYPE.Key))
-        {
-            StartCoroutine(MoveInitialItemToCells());
-        }
-        else
-        {
-            initialItemPopupContainer.GetComponent<Image>().enabled = false;
-        }
+        //if(CheckBoardHasThisItem(CELL_ITEM_TYPE.Bomb) || CheckBoardHasThisItem(CELL_ITEM_TYPE.Key))
+        //{
+        //    StartCoroutine(MoveInitialItemToCells());
+        //}
+        //else
+        //{
+        //    initialItemPopupContainer.GetComponent<Image>().enabled = false;
+        //}
     }
 
     private IEnumerator MoveInitialItemToCells()
     {
         yield return new WaitForEndOfFrame();
-        GamePlayController.Instance.level.board.DisableClickControlAllCellsOnBoard();
-        GamePlayController.Instance.level.board.isCompletelyDisableControl = true;
-        List<Vector3> targetPositions = new List<Vector3>();
-        List<Vector2Int> targetCells = new List<Vector2Int>();
-        for (int i = 1; i <= boardHeight; i++)
-        {
-            for (int j = 1; j <= boardWidth; j++)
-            {
-                if (GetCellFromPosition(new Vector2Int(i, j)).CheckHasItemInThisCell(CELL_ITEM_TYPE.Bomb))
-                {
-                    var item = Instantiate(GameAssets.Instance.bombPrefab, initialItemPopupContainer);
-                    item.localScale = new Vector3(3, 3, 1);
-                    targetPositions.Add(cellGameObjectsInScene[i, j].transform.Find("Cat").Find("Items").GetChild(2).position);
-                    targetCells.Add(new Vector2Int(i, j));
-                //    GetCellFromPosition(new Vector2Int(i, j)).GetCatItemManager().HideItem(CELL_ITEM_TYPE.Bomb);
-                    item.GetChild(0).gameObject.SetActive(false);
-                }
-                if (GetCellFromPosition(new Vector2Int(i, j)).CheckHasItemInThisCell(CELL_ITEM_TYPE.Key))
-                {
-                    var item = Instantiate(GameAssets.Instance.keyPrefab, initialItemPopupContainer);
-                    item.localScale = new Vector3(2, 2, 1);
-                    targetPositions.Add(cellGameObjectsInScene[i, j].transform.Find("Cat").Find("Items").GetChild(0).position);
-                    targetCells.Add(new Vector2Int(i, j));
-               //     GetCellFromPosition(new Vector2Int(i, j)).GetCatItemManager().HideItem(CELL_ITEM_TYPE.Key);
-                    item.GetComponent<SkeletonGraphic>().timeScale = .1f;
-                //    SkinManager keySkinManager = item.GetComponent<SkinManager>();
-                  //  int keyID = GetCellFromPosition(new Vector2Int(i, j)).GetCatItemManager().GetKeyID();
-                 //   keySkinManager.ChangeSkin(keyID, "key", true);
-                }
-            }
-        }
+        //GamePlayController.Instance.level.board.DisableClickControlAllCellsOnBoard();
+        //GamePlayController.Instance.level.board.isCompletelyDisableControl = true;
+        //List<Vector3> targetPositions = new List<Vector3>();
+        //List<Vector2Int> targetCells = new List<Vector2Int>();
+        //for (int i = 1; i <= boardHeight; i++)
+        //{
+        //    for (int j = 1; j <= boardWidth; j++)
+        //    {
+        //        if (GetCellFromPosition(new Vector2Int(i, j)).CheckHasItemInThisCell(CELL_ITEM_TYPE.Bomb))
+        //        {
+        //            var item = Instantiate(GamePlayController.Instance.gameAssets.bombPrefab, initialItemPopupContainer);
+        //            item.localScale = new Vector3(3, 3, 1);
+        //            targetPositions.Add(cellGameObjectsInScene[i, j].transform.Find("Cat").Find("Items").GetChild(2).position);
+        //            targetCells.Add(new Vector2Int(i, j));
+        //        //    GetCellFromPosition(new Vector2Int(i, j)).GetCatItemManager().HideItem(CELL_ITEM_TYPE.Bomb);
+        //            item.GetChild(0).gameObject.SetActive(false);
+        //        }
+        //        if (GetCellFromPosition(new Vector2Int(i, j)).CheckHasItemInThisCell(CELL_ITEM_TYPE.Key))
+        //        {
+        //            var item = Instantiate(GamePlayController.Instance.gameAssets.keyPrefab, initialItemPopupContainer);
+        //            item.localScale = new Vector3(2, 2, 1);
+        //            targetPositions.Add(cellGameObjectsInScene[i, j].transform.Find("Cat").Find("Items").GetChild(0).position);
+        //            targetCells.Add(new Vector2Int(i, j));
+        //       //     GetCellFromPosition(new Vector2Int(i, j)).GetCatItemManager().HideItem(CELL_ITEM_TYPE.Key);
+        //            item.GetComponent<SkeletonGraphic>().timeScale = .1f;
+        //        //    SkinManager keySkinManager = item.GetComponent<SkinManager>();
+        //          //  int keyID = GetCellFromPosition(new Vector2Int(i, j)).GetCatItemManager().GetKeyID();
+        //         //   keySkinManager.ChangeSkin(keyID, "key", true);
+        //        }
+        //    }
+        //}
 
-        Debug.Log("Child count:" + initialItemPopupContainer.childCount);
-        childCount = initialItemPopupContainer.childCount;
+        //Debug.Log("Child count:" + initialItemPopupContainer.childCount);
+        //childCount = initialItemPopupContainer.childCount;
 
-        StartCoroutine(InitialItemCoroutine(targetPositions, targetCells));
+        //StartCoroutine(InitialItemCoroutine(targetPositions, targetCells));
     }
 
     int childCount = 0;
@@ -399,7 +409,10 @@ public class Board : MonoBehaviour
             {
                 //Vector2 initCellPosition = new Vector2(j * cellSize + originalOffset.x, -1f * i * cellSize + originalOffset.y);
           
-                GameObject cellGO = Instantiate(GamePlayController.Instance.gameAssets.cellPrefab, gamePanel);
+                GameObject cellGO = SimplePool.Spawn(GamePlayController.Instance.gameAssets.cellPrefab,Vector3.zero, Quaternion.identity);
+                cellGO.transform.SetParent(gamePanel);
+                cellGO.transform.localScale = new Vector3(1, 1, 1);
+                lsPrefapt.Add(cellGO);
                 cellGameObjectsInScene[i, j] = cellGO;
                 Cell cellScript = cellGO.GetComponent<Cell>();
                 cellScript.Initialize();
@@ -434,14 +447,17 @@ public class Board : MonoBehaviour
         {
             for (int j = 0; j <= boardWidth + 1; j++)
             {
-                var cellBackgroundTransform = Instantiate(GamePlayController.Instance.gameAssets.cellBackground, cellBackgroundsContainer);
+                var cellBackgroundTransform = SimplePool.Spawn(GamePlayController.Instance.gameAssets.cellBackground, Vector3.zero, Quaternion.identity);
+                cellBackgroundTransform.transform.SetParent(cellBackgroundsContainer);
+                cellBackgroundTransform.localScale = new Vector3(1,1,1);
+                lsPrefapt.Add(cellBackgroundTransform.gameObject);
                 if (i == 0 || i == boardHeight + 1 || j == 0 || j == boardWidth + 1)
                 {
                     cellBackgroundTransform.GetComponent<Image>().enabled = false;
                 }
                 else
                 {
-                    cellBackgroundTransform.GetComponent<Image>().sprite = (runIndex % 2 == 0) ? GameAssets.Instance.grid_0 : GameAssets.Instance.grid_1;
+                    cellBackgroundTransform.GetComponent<Image>().sprite = (runIndex % 2 == 0) ? GamePlayController.Instance.gameAssets.grid_0 : GamePlayController.Instance.gameAssets.grid_1;
                     if (j == boardWidth)
                     {
                         if (boardWidth % 2 == 0)
@@ -2097,14 +2113,14 @@ public class Board : MonoBehaviour
         Vector3 beginPoint = cat.position;
         Vector3 endPoint = cellWorldPointPositions[p2.x, p2.y];
 
-        SkeletonGraphic catSkeletonGraphic = cat.GetComponent<SkeletonGraphic>();
-        catSkeletonGraphic.Initialize(true);
-        catSkeletonGraphic.SetMaterialDirty();
+        //SkeletonGraphic catSkeletonGraphic = cat.GetComponent<SkeletonGraphic>();
+        //catSkeletonGraphic.Initialize(true);
+        //catSkeletonGraphic.SetMaterialDirty();
 
-        CatAnimationData catAnimationData = Utility.GetCatAnimationData(catType);
-        AnimationReferenceAsset idle = catAnimationData.idle;
-        AnimationReferenceAsset jumping = catAnimationData.jumping;
-        AnimationReferenceAsset grounding = catAnimationData.grounding;
+        //CatAnimationData catAnimationData = Utility.GetCatAnimationData(catType);
+        //AnimationReferenceAsset idle = catAnimationData.idle;
+        //AnimationReferenceAsset jumping = catAnimationData.jumping;
+        //AnimationReferenceAsset grounding = catAnimationData.grounding;
 
         float catSpeed = 6f;
 
@@ -2120,45 +2136,45 @@ public class Board : MonoBehaviour
         float distance = Vector2.Distance(beginPoint, endPoint);
         //float moveTime = Mathf.Pow(distance, (distance > 1) ? 2 : 1) / catSpeed;
         float moveTime = distance / catSpeed;
-        catSkeletonGraphic.AnimationState.SetAnimation(0, idle, false);
+   //     catSkeletonGraphic.AnimationState.SetAnimation(0, idle, false);
 
         cat.DOJump(endPoint, 0.25f, 1, moveTime, false).SetDelay(0.12f).OnStart(() =>
         {
-            catSkeletonGraphic.timeScale = 1.5f;
-            catSkeletonGraphic.AnimationState.SetAnimation(0, jumping, false);
+            //catSkeletonGraphic.timeScale = 1.5f;
+            //catSkeletonGraphic.AnimationState.SetAnimation(0, jumping, false);
         }).OnComplete(() =>
         {
-            var track = catSkeletonGraphic.AnimationState.SetAnimation(0, grounding, false);
-            track.Complete += (s) =>
-            {
-                catSkeletonGraphic.timeScale = 1f;
-                catSkeletonGraphic.AnimationState.SetAnimation(0, idle, true);
-                catSkeletonGraphic.AnimationState.ClearTracks();
-                catSkeletonGraphic.Skeleton.SetToSetupPose();
-                catSkeletonGraphic.Initialize(true);
-                catSkeletonGraphic.SetMaterialDirty();
+            //var track = catSkeletonGraphic.AnimationState.SetAnimation(0, grounding, false);
+            //track.Complete += (s) =>
+            //{
+            //    catSkeletonGraphic.timeScale = 1f;
+            //    catSkeletonGraphic.AnimationState.SetAnimation(0, idle, true);
+            //    catSkeletonGraphic.AnimationState.ClearTracks();
+            //    catSkeletonGraphic.Skeleton.SetToSetupPose();
+            //    catSkeletonGraphic.Initialize(true);
+            //    catSkeletonGraphic.SetMaterialDirty();
 
-                movingCats.Dequeue();
+            //    movingCats.Dequeue();
 
-                //There is no cat moving in scene
-                if (movingCats.Count == 0)
-                {
-                    isCompletelyDisableControl = false;
-                    EnableClickControlAllCellsOnBoard();
-                    Debug.Log("Cat queue empty");
-                    DoAllActionsInGameplayActions();
-                }
-                else
-                {
-                    int len = movingCats.Count;
-                    string str = "";
-                    foreach (var i in movingCats)
-                    {
-                        str += i.ToString() + " ";
-                    }
-                    Debug.Log("Cat queue remains: " + str);
-                }
-            };
+            //    //There is no cat moving in scene
+            //    if (movingCats.Count == 0)
+            //    {
+            //        isCompletelyDisableControl = false;
+            //        EnableClickControlAllCellsOnBoard();
+            //        Debug.Log("Cat queue empty");
+            //        DoAllActionsInGameplayActions();
+            //    }
+            //    else
+            //    {
+            //        int len = movingCats.Count;
+            //        string str = "";
+            //        foreach (var i in movingCats)
+            //        {
+            //            str += i.ToString() + " ";
+            //        }
+            //        Debug.Log("Cat queue remains: " + str);
+            //    }
+            //};
         });
 
         cat.SetParent(targetTransform);
@@ -2427,26 +2443,14 @@ public class Board : MonoBehaviour
 
     public void OnWinLevel(bool isImmediate)
     {
-        if (!isImmediate)
-        {
-            StartCoroutine(WaitWin(1.25f));
-        }
-        else
-        {
-            StartCoroutine(WaitWin(0.1f));
-        }
+        UseProfile.CurrentLevel++;
+        GamePlayController.Instance.Init();
+
         /*WinPopup.Setup().Show();
         Debug.Log("You Win !");*/
     }
 
-    private IEnumerator WaitWin(float duration)
-    {
-        yield return new WaitForSeconds(duration);
-        UseProfile.CurrentLevel++;
-
-
-        Debug.Log("You Win !");
-    }
+   
 
     public void OnLoseLevel()
     {

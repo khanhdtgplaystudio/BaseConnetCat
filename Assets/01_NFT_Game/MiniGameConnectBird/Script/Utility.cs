@@ -86,11 +86,11 @@ public static class Utility
 
     public static CatAnimationData GetCatAnimationData(CAT_TYPE catType)
     {
-        if(GameAssets.Instance.catAnimationDatas[CatTypeToInt(catType) - 1] != null)
-        {
-            return GameAssets.Instance.catAnimationDatas[CatTypeToInt(catType) - 1];
-        }
-        Debug.Log("Error: cannot find cat animation data !");
+        //if(GamePlayController.Instance.gameAssets.catAnimationDatas[CatTypeToInt(catType) - 1] != null)
+        //{
+        //    return GamePlayController.Instance.gameAssets.catAnimationDatas[CatTypeToInt(catType) - 1];
+        //}
+        //Debug.Log("Error: cannot find cat animation data !");
         return new CatAnimationData();
     }
 
