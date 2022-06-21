@@ -13,7 +13,7 @@ public class MiniGameEventBox : BaseBox
 
         if (instance == null)
         {
-            instance = Instantiate(Resources.Load<MiniGameEventBox>(""));
+            instance = Instantiate(Resources.Load<MiniGameEventBox>("UI/Popups/MiniGameEventBox"));
             instance.Init();
         }
         if (CallInstance)
@@ -40,6 +40,7 @@ public class MiniGameEventBox : BaseBox
     }
     public void InitState()
     {
+        miniGame.InnitState();
 
     }
 }

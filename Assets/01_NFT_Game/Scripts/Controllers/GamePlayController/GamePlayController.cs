@@ -42,4 +42,8 @@ public class GamePlayController  : Singleton<GamePlayController>
 
        
     }
+    public void Test()
+    {
+        MiniGameEventBox.Setup().Show();
+    }
 }

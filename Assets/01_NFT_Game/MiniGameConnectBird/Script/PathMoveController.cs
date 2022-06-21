@@ -111,7 +111,8 @@ public class PathMoveController : MonoBehaviour
         for (int i = 0; i < inputPath.Count; i++)
         {
         var a =    SimplePool.Spawn(MiniGameEventBox.Setup(true).gameAssets.heartParticlePrefab, inputPath[i], Quaternion.identity);
-            a.transform.localScale = new Vector2(0.1f, 0.1f);
+            a.transform.localScale = new Vector2(0.5f, 0.5f);
+            a.transform.SetParent(MiniGameEventBox.Setup(true).gameAssets.canvas);
             yield return new WaitForSeconds(1 / calculatedSpeed);
         }
         actionComplete?.Invoke();

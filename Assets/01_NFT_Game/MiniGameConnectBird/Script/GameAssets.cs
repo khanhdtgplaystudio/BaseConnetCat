@@ -22,6 +22,6 @@ public class GameAssets : MonoBehaviour
     public Sprite grid_0;
     public Sprite grid_1;
     public List<GameObject> catPrefabs;
- 
+    public Transform canvas;
    
 }
