@@ -48,6 +48,9 @@ public class Board : MonoBehaviour
     public bool isCatMove = false;
     public Vector3[] keyPositions = new Vector3[5];
 
+    public List<GameObject> lsCell;
+
+
     public void Initialize()
     {
         this.RegisterListener(EventID.MOVE_COMPLETED, (param) => OnMoveCompleted());
@@ -59,6 +62,7 @@ public class Board : MonoBehaviour
     {
         BoardData boardData;
         boardData = GameController.Instance.dataContain.boardDataList[levelNumber - 1];
+       
         if (boardData != null)
         {
             boardHeight = boardData.boardHeight;
@@ -80,7 +84,7 @@ public class Board : MonoBehaviour
             CreateBoardOnScreen(boardData);
             CreateBoardBackground();
             InsertItemsToCells();
-
+            GamePlayController.Instance.gameAssets.textLevel.text = boardData.levelName;
         //    GameplayController.Instance.gameplayUIController.SetUpLevelText(UserProfile.CurrentLevel.ToString());
         }
         else
@@ -89,162 +93,9 @@ public class Board : MonoBehaviour
         }
     }
 
-    public void SetupTutorial()
-    {
-        Debug.Log(UseProfile.CurrentLevel);
-     //   Debug.Log(GameplayController.Instance.CheckLevelInListTutorial(UserProfile.CurrentLevel));
-        //if (GameplayController.Instance.CheckLevelInListTutorial(UserProfile.CurrentLevel))
-        //{
-        //    Debug.Log("Level has tutorial");
-        //    if(UserProfile.CurrentLevel == 1 || UserProfile.CurrentLevel == 2)
-        //    {
-        //        GameplayController.Instance.handTutorialController.Setup(UserProfile.CurrentLevel);
-        //    }
-        //    else
-        //    {
-        //        GameplayController.Instance.tutorialController.SetupTutorial(UserProfile.CurrentLevel);
-        //    }
-        //}
-    }
+   
 
-    public void SetupInitialItemPopup()
-    {
-        if(CheckBoardHasThisItem(CELL_ITEM_TYPE.Bomb) || CheckBoardHasThisItem(CELL_ITEM_TYPE.Key))
-        {
-            StartCoroutine(MoveInitialItemToCells());
-        }
-        else
-        {
-            initialItemPopupContainer.GetComponent<Image>().enabled = false;
-        }
-    }
-
-    private IEnumerator MoveInitialItemToCells()
-    {
-        yield return new WaitForEndOfFrame();
-        GamePlayController.Instance.level.board.DisableClickControlAllCellsOnBoard();
-        GamePlayController.Instance.level.board.isCompletelyDisableControl = true;
-        List<Vector3> targetPositions = new List<Vector3>();
-        List<Vector2Int> targetCells = new List<Vector2Int>();
-        for (int i = 1; i <= boardHeight; i++)
-        {
-            for (int j = 1; j <= boardWidth; j++)
-            {
-                if (GetCellFromPosition(new Vector2Int(i, j)).CheckHasItemInThisCell(CELL_ITEM_TYPE.Bomb))
-                {
-                    var item = Instantiate(GameAssets.Instance.bombPrefab, initialItemPopupContainer);
-                    item.localScale = new Vector3(3, 3, 1);
-                    targetPositions.Add(cellGameObjectsInScene[i, j].transform.Find("Cat").Find("Items").GetChild(2).position);
-                    targetCells.Add(new Vector2Int(i, j));
-                //    GetCellFromPosition(new Vector2Int(i, j)).GetCatItemManager().HideItem(CELL_ITEM_TYPE.Bomb);
-                    item.GetChild(0).gameObject.SetActive(false);
-                }
-                if (GetCellFromPosition(new Vector2Int(i, j)).CheckHasItemInThisCell(CELL_ITEM_TYPE.Key))
-                {
-                    var item = Instantiate(GameAssets.Instance.keyPrefab, initialItemPopupContainer);
-                    item.localScale = new Vector3(2, 2, 1);
-                    targetPositions.Add(cellGameObjectsInScene[i, j].transform.Find("Cat").Find("Items").GetChild(0).position);
-                    targetCells.Add(new Vector2Int(i, j));
-               //     GetCellFromPosition(new Vector2Int(i, j)).GetCatItemManager().HideItem(CELL_ITEM_TYPE.Key);
-                    item.GetComponent<SkeletonGraphic>().timeScale = .1f;
-                //    SkinManager keySkinManager = item.GetComponent<SkinManager>();
-                  //  int keyID = GetCellFromPosition(new Vector2Int(i, j)).GetCatItemManager().GetKeyID();
-                 //   keySkinManager.ChangeSkin(keyID, "key", true);
-                }
-            }
-        }
-
-        Debug.Log("Child count:" + initialItemPopupContainer.childCount);
-        childCount = initialItemPopupContainer.childCount;
-
-        StartCoroutine(InitialItemCoroutine(targetPositions, targetCells));
-    }
-
-    int childCount = 0;
-    int currentInitialItemIndex = 0;
-
-    private IEnumerator InitialItemCoroutine(List<Vector3> targetPositions, List<Vector2Int> targetCells)
-    {
-        yield return new WaitForSeconds(1f);
-
-        initialItemPopupContainer.GetComponent<Image>().DOFade(0f, 1.5f);
-
-        List<Transform> itemsInitialList = new List<Transform>();
-        while (initialItemPopupContainer.childCount > 0)
-        {
-            var item = initialItemPopupContainer.GetChild(0);
-            item.SetParent(mainCanvas);
-            itemsInitialList.Add(item);
-        }
-
-        DoMoveInitialItemToCell(itemsInitialList, targetPositions, targetCells);
-    }
-
-    private void DoMoveInitialItemToCell(List<Transform> itemsInitialList, List<Vector3> targetPositions, List<Vector2Int> targetCells)
-    {
-        for(int i = 0; i < childCount; i++)
-        {
-            int index = i;
-            var item = itemsInitialList[index];
-            char itemFirstChar = item.name[0];
-
-            /*if (itemFirstChar == 'K')
-            {
-                item.GetComponent<RectTransform>().localScale = new Vector3(2, 2, 1);
-            }*/
-            Debug.Log(targetPositions[index]);
-
-            Sequence s = DOTween.Sequence();
-            s.Append(item.DOScale(1.25f, 1.25f).SetEase(Ease.InOutBack));
-            s.Append(item.DOScale(1, .75f).SetEase(Ease.OutBack));
-            s.Append(item.DOMove(targetPositions[index], 1f));
-            s.Join(item.DOScale((itemFirstChar == 'K') ? 0.5f : 1f, 1f));
-            s.OnComplete(() =>
-            {
-                Debug.Log("i = " + index);
-                Debug.Log("Target cells " + targetCells[index]);
-                if (GetCellFromPosition(targetCells[index]).CheckHasItemInThisCell(CELL_ITEM_TYPE.Bomb))
-                {
-                    Debug.Log("Show bomb at " + targetCells[index]);
-               //     GetCellFromPosition(targetCells[index]).GetCatItemManager().ShowItem(CELL_ITEM_TYPE.Bomb);
-                }
-                if (GetCellFromPosition(targetCells[index]).CheckHasItemInThisCell(CELL_ITEM_TYPE.Key))
-                {
-                    Debug.Log("Show key at " + targetCells[index]);
-                  //  GetCellFromPosition(targetCells[index]).GetCatItemManager().ShowItem(CELL_ITEM_TYPE.Key);
-                }
-                GamePlayController.Instance.level.board.isCompletelyDisableControl = false;
-                GamePlayController.Instance.level.board.EnableClickControlAllCellsOnBoard();
-                item.DOScale(0f, 0.1f);
-            });
-        }
-
-        /*Debug.Log("CURRENT INDEX:" + currentInitialItemIndex + " | childCount:" + initialItemPopupContainer.childCount);
-        if(currentInitialItemIndex < childCount)
-        {
-            var item = itemsInitialList[currentInitialItemIndex];
-            char itemFirstChar = item.name[0];
-
-            if(itemFirstChar == 'K')
-            {
-                item.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
-            }
-            Debug.Log(targetPositions[currentInitialItemIndex]);
-
-            Sequence s = DOTween.Sequence();
-            s.Append(item.DOScale(1.25f, .75f).SetEase(Ease.InOutBack));
-            s.Append(item.DOScale(1, .75f).SetEase(Ease.InOutBack));
-            s.Append(item.DOMove(targetPositions[currentInitialItemIndex], 1f));
-            s.Join(item.DOScale((itemFirstChar == 'K') ? 0.5f : 1f, 1f));
-            s.OnComplete(() =>
-            {
-                CompleteActionInitialItem(targetCells, currentInitialItemIndex);
-                item.DOScale(0f, 0.1f);
-                currentInitialItemIndex++;
-                DoMoveInitialItemToCell(itemsInitialList, targetPositions, targetCells);
-            });
-        }*/
-    }
+  
 
     //STEP 1: Process board string from json file
     private void ProcessBoardLayoutString(string boardLayoutString)
@@ -387,6 +238,11 @@ public class Board : MonoBehaviour
     //STEP 3: Create main board's cells
     public void CreateBoardOnScreen(BoardData boardData)
     {
+        foreach(GameObject item in lsCell)
+        {
+            Destroy(item);
+        }
+        lsCell.Clear();
         Debug.Log("Creating board on screen ...");
         cellGameObjectsInScene = new GameObject[boardHeight + 2, boardWidth + 2];
         cellWorldPointPositions = new Vector2[boardHeight + 2, boardWidth + 2];
@@ -400,6 +256,7 @@ public class Board : MonoBehaviour
                 //Vector2 initCellPosition = new Vector2(j * cellSize + originalOffset.x, -1f * i * cellSize + originalOffset.y);
           
                 GameObject cellGO = Instantiate(GamePlayController.Instance.gameAssets.cellPrefab, gamePanel);
+                lsCell.Add(cellGO);
                 cellGameObjectsInScene[i, j] = cellGO;
                 Cell cellScript = cellGO.GetComponent<Cell>();
                 cellScript.Initialize();
@@ -435,13 +292,14 @@ public class Board : MonoBehaviour
             for (int j = 0; j <= boardWidth + 1; j++)
             {
                 var cellBackgroundTransform = Instantiate(GamePlayController.Instance.gameAssets.cellBackground, cellBackgroundsContainer);
+                lsCell.Add(cellBackgroundTransform.gameObject);
                 if (i == 0 || i == boardHeight + 1 || j == 0 || j == boardWidth + 1)
                 {
                     cellBackgroundTransform.GetComponent<Image>().enabled = false;
                 }
                 else
                 {
-                    cellBackgroundTransform.GetComponent<Image>().sprite = (runIndex % 2 == 0) ? GameAssets.Instance.grid_0 : GameAssets.Instance.grid_1;
+                    cellBackgroundTransform.GetComponent<Image>().sprite = (runIndex % 2 == 0) ? GamePlayController.Instance.gameAssets.grid_0 : GamePlayController.Instance.gameAssets.grid_1;
                     if (j == boardWidth)
                     {
                         if (boardWidth % 2 == 0)
@@ -520,13 +378,7 @@ public class Board : MonoBehaviour
 
         cellDistance = cellWorldPointPositions[0, 1].x - cellWorldPointPositions[0, 0].x;
 
-        /*for (int i = 0; i <= boardHeight + 1; i++)
-        {
-            for (int j = 0; j <= boardWidth + 1; j++)
-            {
-                Debug.Log(cellWorldPointPositions[i, j]);
-            }
-        }*/
+      
     }
 
     #region Utilities
@@ -2098,13 +1950,13 @@ public class Board : MonoBehaviour
         Vector3 endPoint = cellWorldPointPositions[p2.x, p2.y];
 
         SkeletonGraphic catSkeletonGraphic = cat.GetComponent<SkeletonGraphic>();
-        catSkeletonGraphic.Initialize(true);
-        catSkeletonGraphic.SetMaterialDirty();
+        //catSkeletonGraphic.Initialize(true);
+        //catSkeletonGraphic.SetMaterialDirty();
 
-        CatAnimationData catAnimationData = Utility.GetCatAnimationData(catType);
-        AnimationReferenceAsset idle = catAnimationData.idle;
-        AnimationReferenceAsset jumping = catAnimationData.jumping;
-        AnimationReferenceAsset grounding = catAnimationData.grounding;
+        //CatAnimationData catAnimationData = Utility.GetCatAnimationData(catType);
+        //AnimationReferenceAsset idle = catAnimationData.idle;
+        //AnimationReferenceAsset jumping = catAnimationData.jumping;
+        //AnimationReferenceAsset grounding = catAnimationData.grounding;
 
         float catSpeed = 6f;
 
@@ -2120,45 +1972,15 @@ public class Board : MonoBehaviour
         float distance = Vector2.Distance(beginPoint, endPoint);
         //float moveTime = Mathf.Pow(distance, (distance > 1) ? 2 : 1) / catSpeed;
         float moveTime = distance / catSpeed;
-        catSkeletonGraphic.AnimationState.SetAnimation(0, idle, false);
+    //    catSkeletonGraphic.AnimationState.SetAnimation(0, idle, false);
 
         cat.DOJump(endPoint, 0.25f, 1, moveTime, false).SetDelay(0.12f).OnStart(() =>
         {
             catSkeletonGraphic.timeScale = 1.5f;
-            catSkeletonGraphic.AnimationState.SetAnimation(0, jumping, false);
+         //   catSkeletonGraphic.AnimationState.SetAnimation(0, jumping, false);
         }).OnComplete(() =>
         {
-            var track = catSkeletonGraphic.AnimationState.SetAnimation(0, grounding, false);
-            track.Complete += (s) =>
-            {
-                catSkeletonGraphic.timeScale = 1f;
-                catSkeletonGraphic.AnimationState.SetAnimation(0, idle, true);
-                catSkeletonGraphic.AnimationState.ClearTracks();
-                catSkeletonGraphic.Skeleton.SetToSetupPose();
-                catSkeletonGraphic.Initialize(true);
-                catSkeletonGraphic.SetMaterialDirty();
-
-                movingCats.Dequeue();
-
-                //There is no cat moving in scene
-                if (movingCats.Count == 0)
-                {
-                    isCompletelyDisableControl = false;
-                    EnableClickControlAllCellsOnBoard();
-                    Debug.Log("Cat queue empty");
-                    DoAllActionsInGameplayActions();
-                }
-                else
-                {
-                    int len = movingCats.Count;
-                    string str = "";
-                    foreach (var i in movingCats)
-                    {
-                        str += i.ToString() + " ";
-                    }
-                    Debug.Log("Cat queue remains: " + str);
-                }
-            };
+           
         });
 
         cat.SetParent(targetTransform);
@@ -2419,34 +2241,21 @@ public class Board : MonoBehaviour
         //Check win
         if (CheckThereIsNoAnimalCellLeft())
         {
-            OnWinLevel(false);
+            OnWinLevel();
         }
         //Check others
         //Check bomb
     }
 
-    public void OnWinLevel(bool isImmediate)
+    public void OnWinLevel()
     {
-        if (!isImmediate)
-        {
-            StartCoroutine(WaitWin(1.25f));
-        }
-        else
-        {
-            StartCoroutine(WaitWin(0.1f));
-        }
+        UseProfile.CurrentLevel++;
+        GamePlayController.Instance.Init();
         /*WinPopup.Setup().Show();
         Debug.Log("You Win !");*/
     }
 
-    private IEnumerator WaitWin(float duration)
-    {
-        yield return new WaitForSeconds(duration);
-        UseProfile.CurrentLevel++;
 
-
-        Debug.Log("You Win !");
-    }
 
     public void OnLoseLevel()
     {
@@ -2550,10 +2359,7 @@ public class Board : MonoBehaviour
                             {
                                 if (cell.CheckHasItemInThisCell(CELL_ITEM_TYPE.Box))
                                 {
-                                    //if (cell.GetCatItemManager() != null)
-                                    //{
-                                    //    cell.GetCatItemManager().OpenBox();
-                                    //}
+                      
                                 }
                                 else
                                 {
@@ -2569,19 +2375,7 @@ public class Board : MonoBehaviour
                 }
                 Debug.Log("Action " + currentAction.gameplayActionType + " " + currentAction.description + " is done !");
             }
-            //GamePlayController.Instance.gameplayUIController.RemoveAllHintUIOnCells();
-            //SearchBoardAndBombCountdown();
-            //gameplayActions.Clear();
-
-            //if (!CheckThereIsConnectableCells() && !CheckThereIsNoAnimalCellLeft())
-            //{
-            //    GamePlayController.Instance.gameplayUIController.ToggleHint(false);
-            //}
-            //else
-            //{
-            //    GamePlayController.Instance.gameplayUIController.ToggleHint(true);
-            //}
-            //GamePlayController.Instance.gameplayUIController.DeleteHintEffect();
+     
 
             CheckBoardState();
             if (!isCompletelyDisableControl)

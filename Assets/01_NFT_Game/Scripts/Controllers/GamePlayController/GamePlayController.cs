@@ -31,9 +31,7 @@ public class GamePlayController  : Singleton<GamePlayController>
 
     public void Init()
     {
-        playerContain.Init();
-        InitLevel();
-        gameScene.Init();
+      
         level.Init();
         boardUserInput.Initialize();
         //MusicManager.Instance.PlayBGMusic();

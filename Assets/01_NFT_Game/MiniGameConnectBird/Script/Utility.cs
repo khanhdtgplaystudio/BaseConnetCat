@@ -84,15 +84,7 @@ public static class Utility
         return Mathf.Abs(p1.x - p2.x) + Mathf.Abs(p1.y - p2.y);
     }
 
-    public static CatAnimationData GetCatAnimationData(CAT_TYPE catType)
-    {
-        if(GameAssets.Instance.catAnimationDatas[CatTypeToInt(catType) - 1] != null)
-        {
-            return GameAssets.Instance.catAnimationDatas[CatTypeToInt(catType) - 1];
-        }
-        Debug.Log("Error: cannot find cat animation data !");
-        return new CatAnimationData();
-    }
+
 
     public static int CatTypeToInt(CAT_TYPE catType)
     {

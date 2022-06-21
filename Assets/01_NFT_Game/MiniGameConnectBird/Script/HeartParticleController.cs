@@ -12,7 +12,7 @@ public class HeartParticleController : MonoBehaviour
 
         transform.DOScale(scale * 1.2f, .2f).OnComplete(() =>
         {
-            transform.DOScale(0f, .45f);
+            transform.DOScale(0f, .45f).OnComplete(delegate { SimplePool.Despawn(this.gameObject); });
         });
     }
 }

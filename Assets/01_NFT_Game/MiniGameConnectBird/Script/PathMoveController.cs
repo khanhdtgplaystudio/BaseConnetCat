@@ -142,7 +142,7 @@ public class PathMoveController : MonoBehaviour
             this.speed * Time.deltaTime);
         if(timeCount <= 0)
         {
-            Instantiate(GameAssets.Instance.heartParticlePrefab);
+            Instantiate(GamePlayController.Instance.gameAssets.heartParticlePrefab);
         }
         lineRendererContainer[currentIndexPath].GetComponent<LineRenderer>().SetPosition(1, target);
 

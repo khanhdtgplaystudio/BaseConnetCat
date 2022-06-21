@@ -196,7 +196,7 @@ public class Cell : MonoBehaviour
         scale = new Vector3((dir == -1) ? -1f : 1f, 1f, 1f);
         GetCat().GetComponent<RectTransform>().localScale = scale;
 
-        //if(GetCatItemManager() != null && changed)
+        //if (GetCatItemManager() != null && changed)
         //{
         //    Debug.Log("Flip all items");
         //    GetCatItemManager().FlipAllItems();
@@ -311,7 +311,7 @@ public class Cell : MonoBehaviour
         }
         GameObject catPrefab = null;
         
-        catPrefab = GameAssets.Instance.catPrefabs[cellCatType - 1];
+        catPrefab = GamePlayController.Instance.gameAssets.catPrefabs[cellCatType - 1];
         var catGo = Instantiate(catPrefab, this.transform);
         catGo.name = "Cat";
 
