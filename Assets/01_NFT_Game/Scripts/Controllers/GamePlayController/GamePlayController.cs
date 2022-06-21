@@ -17,23 +17,21 @@ public class GamePlayController  : Singleton<GamePlayController>
     public PlayerContain playerContain;
     public GameScene gameScene;
     //public CameraFollow cameraFollow;
-    public Level level;
-    public BoardUserInput boardUserInput;
-    public GameAssets gameAssets;
+
     public StateGame state;
 
     protected override void OnAwake()
     {
         GameController.Instance.currentScene = SceneType.GamePlay;
 
-        Init();
+     
     }
 
     public void Init()
     {
       
-        level.Init();
-        boardUserInput.Initialize();
+       
+    
         //MusicManager.Instance.PlayBGMusic();
     }
 

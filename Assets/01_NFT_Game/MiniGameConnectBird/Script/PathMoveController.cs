@@ -17,7 +17,7 @@ public class PathMoveController : MonoBehaviour
 
     public void Setup(List<Vector3> inputPath, float speed, Action actionComplete)
     {
-        space = GamePlayController.Instance.level.board.cellDistance / 2f;
+        space = MiniGameEventBox.Setup(true).miniGame.board.cellDistance / 2f;
         //Debug.Log("Setup method called");
         lineRendererContainer.Clear();
 
@@ -28,7 +28,7 @@ public class PathMoveController : MonoBehaviour
 
         for (int i = 0; i < this.path.Length; i++)
         {
-            lineRendererContainer.Add(Instantiate(GamePlayController.Instance.gameAssets.lineHolderPrefab, this.transform));
+            lineRendererContainer.Add(Instantiate(MiniGameEventBox.Setup(true).gameAssets.lineHolderPrefab, this.transform));
             lineRendererContainer[i].gameObject.SetActive(false);
         }
 
@@ -110,7 +110,7 @@ public class PathMoveController : MonoBehaviour
     {
         for (int i = 0; i < inputPath.Count; i++)
         {
-        var a =    SimplePool.Spawn(GamePlayController.Instance.gameAssets.heartParticlePrefab, inputPath[i], Quaternion.identity);
+        var a =    SimplePool.Spawn(MiniGameEventBox.Setup(true).gameAssets.heartParticlePrefab, inputPath[i], Quaternion.identity);
             a.transform.localScale = new Vector2(0.1f, 0.1f);
             yield return new WaitForSeconds(1 / calculatedSpeed);
         }
@@ -142,7 +142,7 @@ public class PathMoveController : MonoBehaviour
             this.speed * Time.deltaTime);
         if(timeCount <= 0)
         {
-            Instantiate(GamePlayController.Instance.gameAssets.heartParticlePrefab);
+            Instantiate(MiniGameEventBox.Setup(true).gameAssets.heartParticlePrefab);
         }
         lineRendererContainer[currentIndexPath].GetComponent<LineRenderer>().SetPosition(1, target);
 

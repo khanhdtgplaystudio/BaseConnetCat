@@ -38,7 +38,7 @@ public class Cell : MonoBehaviour
         //{
         //    if (!GetCatItemManager().CheckHasItemInList(CELL_ITEM_TYPE.Box) && !GetCatItemManager().CheckHasItemInList(CELL_ITEM_TYPE.Cage))
         //    {
-        GamePlayController.Instance.boardUserInput.InvokeCellClicked(cellPosition);
+       MiniGameEventBox.Setup(true).miniGame.boardUserInput.InvokeCellClicked(cellPosition);
         //    }
         //    else
         //    {
@@ -80,7 +80,7 @@ public class Cell : MonoBehaviour
 
     private void ChangeBoardLineModifierDirection(string dir)
     {
-        GamePlayController.Instance.level.board.ChangeBoardLineModifiersDirection(dir);
+        MiniGameEventBox.Setup(true).miniGame.board.ChangeBoardLineModifiersDirection(dir);
     }
 
     public void EnableCell()
@@ -311,7 +311,7 @@ public class Cell : MonoBehaviour
         }
         GameObject catPrefab = null;
         
-        catPrefab = GamePlayController.Instance.gameAssets.catPrefabs[cellCatType - 1];
+        catPrefab = MiniGameEventBox.Setup(true).gameAssets.catPrefabs[cellCatType - 1];
         var catGo = Instantiate(catPrefab, this.transform);
         catGo.name = "Cat";
 
@@ -369,7 +369,7 @@ public class Cell : MonoBehaviour
         }
         else
         {
-            return GamePlayController.Instance.level.board.cellWorldPointPositions[cellPosition.x, cellPosition.y];
+            return MiniGameEventBox.Setup(true).miniGame.board.cellWorldPointPositions[cellPosition.x, cellPosition.y];
         }
     }
 }

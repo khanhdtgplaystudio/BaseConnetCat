@@ -84,7 +84,7 @@ public class Board : MonoBehaviour
             CreateBoardOnScreen(boardData);
             CreateBoardBackground();
             InsertItemsToCells();
-            GamePlayController.Instance.gameAssets.textLevel.text = boardData.levelName;
+            MiniGameEventBox.Setup(true).gameAssets.textLevel.text = boardData.levelName;
         //    GameplayController.Instance.gameplayUIController.SetUpLevelText(UserProfile.CurrentLevel.ToString());
         }
         else
@@ -255,7 +255,7 @@ public class Board : MonoBehaviour
             {
                 //Vector2 initCellPosition = new Vector2(j * cellSize + originalOffset.x, -1f * i * cellSize + originalOffset.y);
           
-                GameObject cellGO = Instantiate(GamePlayController.Instance.gameAssets.cellPrefab, gamePanel);
+                GameObject cellGO = Instantiate(MiniGameEventBox.Setup(true).gameAssets.cellPrefab, gamePanel);
                 lsCell.Add(cellGO);
                 cellGameObjectsInScene[i, j] = cellGO;
                 Cell cellScript = cellGO.GetComponent<Cell>();
@@ -291,7 +291,7 @@ public class Board : MonoBehaviour
         {
             for (int j = 0; j <= boardWidth + 1; j++)
             {
-                var cellBackgroundTransform = Instantiate(GamePlayController.Instance.gameAssets.cellBackground, cellBackgroundsContainer);
+                var cellBackgroundTransform = Instantiate(MiniGameEventBox.Setup(true).gameAssets.cellBackground, cellBackgroundsContainer);
                 lsCell.Add(cellBackgroundTransform.gameObject);
                 if (i == 0 || i == boardHeight + 1 || j == 0 || j == boardWidth + 1)
                 {
@@ -299,7 +299,7 @@ public class Board : MonoBehaviour
                 }
                 else
                 {
-                    cellBackgroundTransform.GetComponent<Image>().sprite = (runIndex % 2 == 0) ? GamePlayController.Instance.gameAssets.grid_0 : GamePlayController.Instance.gameAssets.grid_1;
+                    cellBackgroundTransform.GetComponent<Image>().sprite = (runIndex % 2 == 0) ? MiniGameEventBox.Setup(true).gameAssets.grid_0 : MiniGameEventBox.Setup(true).gameAssets.grid_1;
                     if (j == boardWidth)
                     {
                         if (boardWidth % 2 == 0)
@@ -513,7 +513,7 @@ public class Board : MonoBehaviour
 
     private void ConnectPath(List<Vector3> path, Vector2Int p1, Vector2Int p2)
     {
-        PathMoveController pathMoveController = Instantiate(GamePlayController.Instance.gameAssets.pathMoveControllerPrefab, pathMoveControllerContainer).GetComponent<PathMoveController>();
+        PathMoveController pathMoveController = Instantiate(MiniGameEventBox.Setup(true).gameAssets.pathMoveControllerPrefab, pathMoveControllerContainer).GetComponent<PathMoveController>();
 
         pathMoveController.DoKill();
 
@@ -533,8 +533,8 @@ public class Board : MonoBehaviour
             StartCoroutine(Helper.StartAction(() =>
             {
                 pathMoveController.DeleteHeart();
-                GamePlayController.Instance.boardUserInput.UnhighlightCat(p1);
-                GamePlayController.Instance.boardUserInput.UnhighlightCat(p2);
+                MiniGameEventBox.Setup(true).miniGame.boardUserInput.UnhighlightCat(p1);
+                MiniGameEventBox.Setup(true).miniGame.boardUserInput.UnhighlightCat(p2);
          //       CatMoveEffectManager.Create(catHomeContainer, Utility.IntToCatType(GetCatTypeFromCell(p1)), cellWorldPointPositions[p1.x, p1.y], GameplayController.Instance.catHomeController.catHome1.position, 3.5f, GameplayController.Instance.catHomeController.catHome1);
           //      CatMoveEffectManager.Create(catHomeContainer, Utility.IntToCatType(GetCatTypeFromCell(p2)), cellWorldPointPositions[p2.x, p2.y], GameplayController.Instance.catHomeController.catHome2.position, 3.5f, GameplayController.Instance.catHomeController.catHome2);
                 RemoveTwoSelectedCells(p1, p2);
@@ -653,7 +653,7 @@ public class Board : MonoBehaviour
     public bool CheckThereIsConnectableCells()
     {
         Vector2Int p1, p2;
-        GamePlayController.Instance.level.board.GetTwoCellsCanBeConnect(out p1, out p2);
+        MiniGameEventBox.Setup(true).miniGame.board.GetTwoCellsCanBeConnect(out p1, out p2);
         if (p1 != new Vector2Int(-1, -1) && p2 != new Vector2Int(-1, -1))
         {
             return true;
@@ -1338,16 +1338,16 @@ public class Board : MonoBehaviour
 
     public bool RandomizeBoard()
     {
-        if (GamePlayController.Instance.boardUserInput.firstCell != new Vector2Int(-1, -1))
+        if (MiniGameEventBox.Setup(true).miniGame.boardUserInput.firstCell != new Vector2Int(-1, -1))
         {
-            Cell cell = GetCellFromPosition(GamePlayController.Instance.boardUserInput.firstCell);
+            Cell cell = GetCellFromPosition(MiniGameEventBox.Setup(true).miniGame.boardUserInput.firstCell);
             if (!cell.IsCellEmpty() && !cell.CheckHasBlockItemsInThisCell())
             {
                 Debug.Log("Reset selected cell");
                 cell.ResetCellScale();
                 cell.ToggleCellScale(false);
                 cell.ToggleCatZoomEffect(false);
-                GamePlayController.Instance.boardUserInput.UnhighlightCat(GamePlayController.Instance.boardUserInput.firstCell);
+                MiniGameEventBox.Setup(true).miniGame.boardUserInput.UnhighlightCat(MiniGameEventBox.Setup(true).miniGame.boardUserInput.firstCell);
             }
         }
         if (CheckBoardOnlyRemainsSameCats())
@@ -2150,8 +2150,8 @@ public class Board : MonoBehaviour
 
     public void OpenAllCages()
     {
-        GamePlayController.Instance.level.board.DisableClickControlAllCellsOnBoard();
-        GamePlayController.Instance.level.board.isCompletelyDisableControl = true;
+        MiniGameEventBox.Setup(true).miniGame.board.DisableClickControlAllCellsOnBoard();
+        MiniGameEventBox.Setup(true).miniGame.board.isCompletelyDisableControl = true;
         for (int i = 1; i <= boardHeight; i++)
         {
             for (int j = 1; j <= boardWidth; j++)
@@ -2179,8 +2179,8 @@ public class Board : MonoBehaviour
 
     public void OpenAllBoxes()
     {
-        GamePlayController.Instance.level.board.DisableClickControlAllCellsOnBoard();
-        GamePlayController.Instance.level.board.isCompletelyDisableControl = true;
+       MiniGameEventBox.Setup(true).miniGame.board.DisableClickControlAllCellsOnBoard();
+        MiniGameEventBox.Setup(true).miniGame.board.isCompletelyDisableControl = true;
         for (int i = 1; i <= boardHeight; i++)
         {
             for (int j = 1; j <= boardWidth; j++)
@@ -2204,8 +2204,8 @@ public class Board : MonoBehaviour
 
     public void DestroyAllBombs()
     {
-        GamePlayController.Instance.level.board.DisableClickControlAllCellsOnBoard();
-        GamePlayController.Instance.level.board.isCompletelyDisableControl = true;
+        MiniGameEventBox.Setup(true).miniGame.board.DisableClickControlAllCellsOnBoard();
+        MiniGameEventBox.Setup(true).miniGame.board.isCompletelyDisableControl = true;
         for (int i = 1; i <= boardHeight; i++)
         {
             for (int j = 1; j <= boardWidth; j++)
@@ -2250,7 +2250,7 @@ public class Board : MonoBehaviour
     public void OnWinLevel()
     {
         UseProfile.CurrentLevel++;
-        GamePlayController.Instance.Init();
+        MiniGameEventBox.Setup(true).miniGame.InnitState();
         /*WinPopup.Setup().Show();
         Debug.Log("You Win !");*/
     }

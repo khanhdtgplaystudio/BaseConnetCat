@@ -12,7 +12,7 @@ public class HeartLine : MonoBehaviour
 
     public static HeartLine Create(List<Vector2> positions, float moveSpeed)
     {
-        Transform heartEffectTransform = Instantiate(GamePlayController.Instance.gameAssets.heartEffectPrefab, positions[0], Quaternion.identity);
+        Transform heartEffectTransform = Instantiate(MiniGameEventBox.Setup(true).gameAssets.heartEffectPrefab, positions[0], Quaternion.identity);
         HeartLine heartLine = heartEffectTransform.GetComponent<HeartLine>();
         heartLine.Setup(positions, moveSpeed);
         return heartLine;

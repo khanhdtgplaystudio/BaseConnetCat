@@ -44,7 +44,7 @@ public class BoardUserInput : MonoBehaviour
                 return;
             }
             //Chọn vào 1 ô khác loại với ô ban đầu được chọn => Chọn ô vừa click làm ô đầu, highlight ô click
-            if (!isNoCellSelected && !GamePlayController.Instance.level.board.CheckTwoCellsSameAnimalType(firstCell, cellClicked))
+            if (!isNoCellSelected && !MiniGameEventBox.Setup(true).miniGame.board.CheckTwoCellsSameAnimalType(firstCell, cellClicked))
             {
                 UnhighlightCat(firstCell);
                 firstCell = cellClicked;
@@ -57,23 +57,23 @@ public class BoardUserInput : MonoBehaviour
                 return;
             }
             //Chọn vào 1 ô cùng loại với ô ban đầu được chọn => check nối, được thì xóa 2 ô => hủy chọn cả hai, un-highlight
-            if (!isNoCellSelected && GamePlayController.Instance.level.board.CheckTwoCellsSameAnimalType(firstCell, cellClicked))
+            if (!isNoCellSelected && MiniGameEventBox.Setup(true).miniGame.board.CheckTwoCellsSameAnimalType(firstCell, cellClicked))
             {
                 secondCell = cellClicked;
 
                 //Neu co the ket noi
-                if (GamePlayController.Instance.level.board.CheckTwoCellsCanBeConnected(firstCell, secondCell))
+                if (MiniGameEventBox.Setup(true).miniGame.board.CheckTwoCellsCanBeConnected(firstCell, secondCell))
                 {
                //     GameController.Instance.soundController.PlaySound(AUDIO_CLIP_TYPE.CatMewSound, 2);
                //     GameplayController.Instance.gameplayUIController.hand.gameObject.SetActive(false);
                     HighlightCat(secondCell);
                     //     GameplayController.Instance.handTutorialController.InvokeTwoCellsConnected(firstCell, secondCell);
 
-                    GamePlayController.Instance.level.board.NewConnectTwoPointsWithLines(firstCell, secondCell,
-                        Utility.IntToCatType(GamePlayController.Instance.level.board.GetCatTypeFromCell(firstCell)));
+                    MiniGameEventBox.Setup(true).miniGame.board.NewConnectTwoPointsWithLines(firstCell, secondCell,
+                        Utility.IntToCatType(MiniGameEventBox.Setup(true).miniGame.board.GetCatTypeFromCell(firstCell)));
 
-                    GamePlayController.Instance.level.board.DisableClickControlMatrixAt(firstCell);
-                    GamePlayController.Instance.level.board.DisableClickControlMatrixAt(secondCell);
+                    MiniGameEventBox.Setup(true).miniGame.board.DisableClickControlMatrixAt(firstCell);
+                    MiniGameEventBox.Setup(true).miniGame.board.DisableClickControlMatrixAt(secondCell);
                     //GameplayController.Instance.level.board.DisableClickControlAllCellsOnBoard();
                 }
                 else
@@ -93,13 +93,13 @@ public class BoardUserInput : MonoBehaviour
 
     private void RemoveTwoSelectedCells(Vector2Int cell1, Vector2Int cell2)
     {
-        GamePlayController.Instance.level.board.RemoveCell(cell1);
-        GamePlayController.Instance.level.board.RemoveCell(cell2);
+        MiniGameEventBox.Setup(true).miniGame.board.RemoveCell(cell1);
+        MiniGameEventBox.Setup(true).miniGame.board.RemoveCell(cell2);
     }
 
     public void HighlightCat(Vector2Int cellPosition)
     {
-        if (GamePlayController.Instance.level.board.GetCellFromPosition(cellPosition).IsCellEmpty())
+        if (MiniGameEventBox.Setup(true).miniGame.board.GetCellFromPosition(cellPosition).IsCellEmpty())
         {
             return;
         }
@@ -112,15 +112,15 @@ public class BoardUserInput : MonoBehaviour
         //scale.y = 1;
         //rectTransform.localScale = scale;
 
-        if(!GamePlayController.Instance.level.board.GetCellFromPosition(cellPosition).isCellZooming)
+        if(!MiniGameEventBox.Setup(true).miniGame.board.GetCellFromPosition(cellPosition).isCellZooming)
         {
-            GamePlayController.Instance.level.board.GetCellFromPosition(cellPosition).ToggleCellScale(true);
+            MiniGameEventBox.Setup(true).miniGame.board.GetCellFromPosition(cellPosition).ToggleCellScale(true);
         }
     }
 
     public void UnhighlightCat(Vector2Int cellPosition)
     {
-        if (GamePlayController.Instance.level.board.GetCellFromPosition(cellPosition).IsCellEmpty())
+        if (MiniGameEventBox.Setup(true).miniGame.board.GetCellFromPosition(cellPosition).IsCellEmpty())
         {
             return;
         }
@@ -130,7 +130,7 @@ public class BoardUserInput : MonoBehaviour
         //scale.y = 0;
         //rectTransform.localScale = scale;
 
-        GamePlayController.Instance.level.board.GetCellFromPosition(cellPosition).ToggleCellScale(false);
+        MiniGameEventBox.Setup(true).miniGame.board.GetCellFromPosition(cellPosition).ToggleCellScale(false);
     }
 
     public void OnCatMoveOnBoardBegin()
